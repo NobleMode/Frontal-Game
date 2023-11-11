@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://7jbyypen3gue"]
+
+[ext_resource type="Environment" uid="uid://drfurl4icrugi" path="res://Asset/World/world.tres" id="1_qreao"]
+[ext_resource type="PackedScene" uid="uid://biykmkdiv8p0r" path="res://Asset/Player/player.tscn" id="2_75hcw"]
+[ext_resource type="PackedScene" uid="uid://bj4ohf2o5co05" path="res://Asset/World/firstTestMap1.tscn" id="2_ohr2y"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_2hcj8"]
+
+[node name="world" type="Node3D"]
+
+[node name="env" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="env"]
+environment = ExtResource("1_qreao")
+camera_attributes = SubResource("CameraAttributesPractical_2hcj8")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="env"]
+transform = Transform3D(0.618664, 0.569891, -0.540813, -0.118325, 0.748094, 0.652958, 0.776694, -0.33997, 0.530251, 0, 0, 0)
+shadow_enabled = true
+
+[node name="stage" type="Node3D" parent="."]
+
+[node name="Node3D" parent="stage" instance=ExtResource("2_ohr2y")]
+
+[node name="Player" parent="stage" instance=ExtResource("2_75hcw")]
+collision_layer = 2

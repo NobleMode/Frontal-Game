@@ -1,0 +1,256 @@
+[gd_scene load_steps=17 format=3 uid="uid://biykmkdiv8p0r"]
+
+[ext_resource type="Environment" uid="uid://drfurl4icrugi" path="res://Asset/World/world.tres" id="1_eifa4"]
+[ext_resource type="Script" path="res://Asset/Player/player.gd" id="1_msdu0"]
+[ext_resource type="PackedScene" uid="uid://dlnc0xwkjxgts" path="res://Asset/Weaponry/Gun/Glock/Glock.tscn" id="3_5ckcj"]
+[ext_resource type="Script" path="res://Asset/Weaponry/Scripts/weapon_manager.gd" id="3_7d2d4"]
+[ext_resource type="Script" path="res://Asset/Player/Reticle.gd" id="3_me55w"]
+[ext_resource type="PackedScene" uid="uid://deov4exojbn7y" path="res://Asset/Weaponry/Melee/Knife (Default)/knife.tscn" id="3_mkq4o"]
+[ext_resource type="Theme" uid="uid://dgxfn705aogj5" path="res://Asset/UI/Theme/Debug.tres" id="4_o20lp"]
+[ext_resource type="Script" path="res://Asset/UI/DebugPanel.gd" id="5_67hak"]
+[ext_resource type="FontFile" uid="uid://bjoo6oxt8e567" path="res://Asset/UI/Reiswar.ttf" id="7_jsol8"]
+[ext_resource type="Texture2D" uid="uid://c3n8yyjcpohso" path="res://Asset/Weaponry/Images/untitled.png" id="9_7bfmx"]
+[ext_resource type="Script" path="res://Asset/Player/HUD.gd" id="9_s8fu2"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bmfui"]
+
+[sub_resource type="Gradient" id="Gradient_g3wwo"]
+offsets = PackedFloat32Array(0.465909, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_q8f1y"]
+gradient = SubResource("Gradient_g3wwo")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_o05at"]
+font = ExtResource("7_jsol8")
+font_size = 36
+
+[sub_resource type="LabelSettings" id="LabelSettings_20mgf"]
+font = ExtResource("7_jsol8")
+font_size = 21
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_msdu0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_bmfui")
+
+[node name="HeadDetect" type="RayCast3D" parent="."]
+target_position = Vector3(0, 1.02, 0)
+
+[node name="Neck" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Head" type="Node3D" parent="Neck"]
+
+[node name="Eye" type="Node3D" parent="Neck/Head"]
+
+[node name="First Person Camera" type="Camera3D" parent="Neck/Head/Eye"]
+cull_mask = 1048573
+environment = ExtResource("1_eifa4")
+
+[node name="shootingRay" type="RayCast3D" parent="Neck/Head"]
+target_position = Vector3(0, 0, -100)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Neck/Head"]
+light_energy = 3.0
+light_projector = SubResource("GradientTexture2D_q8f1y")
+shadow_enabled = true
+spot_range = 10.0
+spot_angle = 25.0
+
+[node name="Rays" type="Node3D" parent="."]
+
+[node name="headRay" type="Node3D" parent="Rays"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="midLow" type="RayCast3D" parent="Rays/headRay"]
+target_position = Vector3(0, 0, -0.8)
+
+[node name="rightLow" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0)
+target_position = Vector3(0, 0, -0.8)
+
+[node name="leftLow" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+target_position = Vector3(0, 0, -0.8)
+
+[node name="midHigh" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+target_position = Vector3(0, 0, -1.325)
+
+[node name="rightHigh" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0.5, 0, 0)
+target_position = Vector3(0, 0, -1.325)
+
+[node name="leftHigh" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, -0.5, 0, 0)
+target_position = Vector3(0, 0, -1.325)
+
+[node name="chestRay" type="RayCast3D" parent="Rays"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.72529e-09)
+target_position = Vector3(0, 0, -0.7)
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+metadata/_edit_use_anchors_ = true
+
+[node name="SubViewport" type="SubViewport" parent="Control/SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+canvas_cull_mask = 4293918722
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Gun Camera" type="Camera3D" parent="Control/SubViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+cull_mask = 2
+environment = ExtResource("1_eifa4")
+
+[node name="weaponManager" type="Node3D" parent="Control/SubViewportContainer/SubViewport/Gun Camera"]
+script = ExtResource("3_7d2d4")
+ray_path = NodePath("../../../../../Neck/Head/shootingRay")
+
+[node name="Knife" parent="Control/SubViewportContainer/SubViewport/Gun Camera/weaponManager" instance=ExtResource("3_mkq4o")]
+transform = Transform3D(1, 0, 0, 0, 0.5, -0.866025, 0, 0.866025, 0.5, 0.42, -0.39, -0.73)
+
+[node name="Glock" parent="Control/SubViewportContainer/SubViewport/Gun Camera/weaponManager" instance=ExtResource("3_5ckcj")]
+transform = Transform3D(-0.16, 0, 2.41593e-08, 0, 0.16, 0, -2.41593e-08, 0, -0.16, 0.365, -0.315, -0.995)
+extra_ammo = 999
+
+[node name="Crosshair" type="CenterContainer" parent="Control" node_paths=PackedStringArray("retLines", "playerController")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_me55w")
+retLines = [NodePath("Top"), NodePath("Right"), NodePath("Bottom"), NodePath("Left")]
+playerController = NodePath("../..")
+retSpeed = 0.5
+metadata/_edit_use_anchors_ = true
+
+[node name="Top" type="Line2D" parent="Control/Crosshair"]
+points = PackedVector2Array(0, -5, 0, -15)
+width = 2.0
+
+[node name="Left" type="Line2D" parent="Control/Crosshair"]
+points = PackedVector2Array(-5, 0, -15, 0)
+width = 2.0
+
+[node name="Bottom" type="Line2D" parent="Control/Crosshair"]
+points = PackedVector2Array(0, 5, 0, 15)
+width = 2.0
+
+[node name="Right" type="Line2D" parent="Control/Crosshair"]
+points = PackedVector2Array(5, 0, 15, 0)
+width = 2.0
+
+[node name="DebugPanel" type="PanelContainer" parent="Control"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 210.0
+offset_bottom = 50.0
+theme = ExtResource("4_o20lp")
+script = ExtResource("5_67hak")
+metadata/_edit_use_anchors_ = true
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/DebugPanel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/DebugPanel/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HUD" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_s8fu2")
+
+[node name="HealthText" type="Label" parent="Control/HUD"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 603.0
+offset_right = 303.0
+offset_bottom = 642.0
+text = "100"
+label_settings = SubResource("LabelSettings_o05at")
+
+[node name="WeaponImage" type="TextureRect" parent="Control/HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -152.0
+offset_top = -40.0
+offset_right = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("9_7bfmx")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="WeaponSlot" type="Label" parent="Control/HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -29.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "1"
+label_settings = SubResource("LabelSettings_o05at")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AmmoCount" type="Label" parent="Control/HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -135.0
+offset_top = -79.0
+offset_right = -8.0
+offset_bottom = -42.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "100/100"
+label_settings = SubResource("LabelSettings_20mgf")
+horizontal_alignment = 2
+vertical_alignment = 2

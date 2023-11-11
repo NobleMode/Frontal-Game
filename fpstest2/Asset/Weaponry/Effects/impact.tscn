@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://ckiqrf7neftto"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_awvim"]
+albedo_color = Color(0.941176, 0.498039, 0, 1)
+emission_enabled = true
+emission = Color(0.580392, 0.286275, 0.0156863, 1)
+
+[sub_resource type="Curve" id="Curve_uq6en"]
+_data = [Vector2(0, 0.915789), 0.0, 2.51345, 0, 0, Vector2(1, 0.0210526), 1.56868, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_ikbmv"]
+curve = SubResource("Curve_uq6en")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_c3svr"]
+emission_shape = 4
+emission_point_count = 1
+direction = Vector3(0, 0, 0)
+spread = 16.37
+flatness = 1.0
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_ikbmv")
+turbulence_noise_scale = 10.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_bdd3p"]
+radius = 0.375
+height = 0.75
+radial_segments = 4
+rings = 1
+
+[node name="impact" type="Node3D"]
+
+[node name="debrisim" type="GPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_awvim")
+emitting = false
+amount = 32
+lifetime = 10.0
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_c3svr")
+draw_pass_1 = SubResource("SphereMesh_bdd3p")

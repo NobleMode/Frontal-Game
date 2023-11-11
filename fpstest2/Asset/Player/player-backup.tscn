@@ -1,0 +1,122 @@
+[gd_scene load_steps=5 format=3 uid="uid://bwujv0x5rafhp"]
+
+[ext_resource type="Script" path="res://Asset/Player/player.gd" id="1_vbcaw"]
+[ext_resource type="Environment" uid="uid://drfurl4icrugi" path="res://Asset/World/world.tres" id="2_ljq6x"]
+[ext_resource type="Script" path="res://Asset/Player/Reticle.gd" id="3_v8bn5"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bmfui"]
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_vbcaw")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_bmfui")
+
+[node name="HeadDetect" type="RayCast3D" parent="."]
+target_position = Vector3(0, 1.02, 0)
+
+[node name="Neck" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Head" type="Node3D" parent="Neck"]
+
+[node name="Eye" type="Node3D" parent="Neck/Head"]
+
+[node name="First Person Camera" type="Camera3D" parent="Neck/Head/Eye"]
+cull_mask = 1048573
+environment = ExtResource("2_ljq6x")
+
+[node name="Rays" type="Node3D" parent="."]
+
+[node name="headRay" type="Node3D" parent="Rays"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="midLow" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+target_position = Vector3(0, 0, -0.8)
+
+[node name="rightLow" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -0.05)
+target_position = Vector3(0, 0, -0.8)
+
+[node name="leftLow" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -0.05)
+target_position = Vector3(0, 0, -0.8)
+
+[node name="midHigh" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0)
+target_position = Vector3(0, 0, -1.325)
+
+[node name="rightHigh" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0.5, 0, 0)
+target_position = Vector3(0, 0, -1.325)
+
+[node name="leftHigh" type="RayCast3D" parent="Rays/headRay"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, -0.5, 0, 0)
+target_position = Vector3(0, 0, -1.325)
+
+[node name="chestRay" type="RayCast3D" parent="Rays"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+target_position = Vector3(0, 0, -0.36)
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="Control/SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+canvas_cull_mask = 4293918722
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Gun Camera" type="Camera3D" parent="Control/SubViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+cull_mask = 2
+environment = ExtResource("2_ljq6x")
+
+[node name="weaponManager" type="Node3D" parent="Control/SubViewportContainer/SubViewport/Gun Camera"]
+
+[node name="CenterContainer" type="CenterContainer" parent="Control" node_paths=PackedStringArray("retLines", "playerController")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_v8bn5")
+retLines = [NodePath("Top"), NodePath("Right"), NodePath("Bottom"), NodePath("Left")]
+playerController = NodePath("../..")
+retSpeed = 0.5
+
+[node name="Top" type="Line2D" parent="Control/CenterContainer"]
+points = PackedVector2Array(0, -5, 0, -15)
+width = 2.0
+
+[node name="Left" type="Line2D" parent="Control/CenterContainer"]
+points = PackedVector2Array(-5, 0, -15, 0)
+width = 2.0
+
+[node name="Bottom" type="Line2D" parent="Control/CenterContainer"]
+points = PackedVector2Array(0, 5, 0, 15)
+width = 2.0
+
+[node name="Right" type="Line2D" parent="Control/CenterContainer"]
+points = PackedVector2Array(5, 0, 15, 0)
+width = 2.0

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://deov4exojbn7y"]
+
+[ext_resource type="ArrayMesh" uid="uid://c8st1etripqte" path="res://Asset/Weaponry/Melee/Knife (Default)/knife.res" id="1_2e6if"]
+[ext_resource type="Script" path="res://Asset/Weaponry/Melee/Melee.gd" id="1_f638b"]
+
+[node name="Knife" type="Node3D"]
+script = ExtResource("1_f638b")
+weapon_name = "Knife"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
+layers = 2
+gi_mode = 2
+gi_lightmap_scale = 3
+mesh = ExtResource("1_2e6if")
