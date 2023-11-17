@@ -4,7 +4,7 @@ This is a WIP Game made using Godot 4, an FPS game that haven't really taken it 
 
 This project will most likely be non completed and this github purpose is to track progress, it will be open source and free until I finish the game *(or not)*
 
-Upon the game release, this github may or may not be archived and project would or would be free to play (depending on my financial situation)
+Upon the game release, this github may or may not be archived and project would or would not be free to play (depending on my financial situation)
 
 # Program Used
 
