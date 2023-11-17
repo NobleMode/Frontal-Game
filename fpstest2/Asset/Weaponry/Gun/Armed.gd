@@ -40,11 +40,15 @@ var sway_pivot = null
 
 # ADS
 @export var ads_pos = Vector3.ZERO
+@export var canted_pos = Vector3.ZERO
+@export var canted_rot = rotation
+@onready var og_rot = rotation
 var ads_speed = 10
 var is_ads = false
+var is_canted = false
 
-@export var bolt_slide : MeshInstance3D
-@export var bolt_lock_pos = Vector3.ZERO
+# bolt
+@export var need_bolt_lock : bool
 
 
 func _ready():
@@ -55,7 +59,7 @@ func _process(delta):
 
 # Fire Cycle
 func fire():
-	if not is_reloading:
+	if !is_reloading and is_equipped:
 		if ammo_in_mag > 0:
 			if not is_firing:
 				is_firing = true
@@ -66,6 +70,7 @@ func fire():
 		
 		elif is_firing:
 			fire_stop()
+			
 
 func fire_stop():
 	is_firing = false
@@ -74,18 +79,23 @@ func fire_stop():
 
 func fire_bullet():  # Will be called from the animation track
 	update_ammo("consume")  
+
+	if ammo_in_mag == 0 and need_bolt_lock:
+		animation_player.get_animation("Fire").track_set_enabled(0, false)
+		
 	for flash in muzzle_flash.get_children():
 		flash.emitting = true
-	
+
 	ray.force_raycast_update()
-	
+
 	if ray.is_colliding():
 		var impact = Global.instantiate_node(impact_effect, ray.get_collision_point())
 		for im in impact.get_children():
+			print(ray.get_collision_normal())
+			im.look_at(ray.get_collision_point() + ray.get_collision_normal(), Vector3.UP)
+			im.look_at(ray.get_collision_point() + ray.get_collision_normal(), Vector3.RIGHT)
+			
 			im.emitting = true
-
-
-
 
 # Reload
 func reload():
@@ -100,12 +110,9 @@ func reload():
 			is_reloading = true
 			
 		var currentAnim = animation_player.current_animation
-
-		if is_ads:
-			animation_player.get_animation(currentAnim).track_set_enabled(0, false)
-		else:
-			animation_player.get_animation(currentAnim).track_set_enabled(0, true)
-
+			
+		if need_bolt_lock:
+			animation_player.get_animation("Fire").track_set_enabled(0, true)
 
 
 # Equip/Unequip Cycle
@@ -205,11 +212,21 @@ func drop_weapon():
 func aim_down_sights(value, delta):
 	is_ads = value
 	
-	if is_ads:
-		transform.origin = transform.origin.lerp(ads_pos, ads_speed * delta)
-		#player.camera.fov = lerp(player.camera.fov, 50, ads_speed * delta)
+	if is_ads and !is_reloading:
+		if !is_canted:
+			transform.origin = transform.origin.lerp(ads_pos, ads_speed * delta)
+			rotation = rotation.lerp(og_rot, ads_speed * delta)
+			#player.camera.fov = lerp(player.camera.fov, 50, ads_speed * delta)
+		else:
+			transform.origin = transform.origin.lerp(canted_pos, ads_speed * delta)
+			rotation = rotation.lerp(canted_rot, ads_speed * delta)
+			#player.camera.fov = lerp(player.camera.fov, 50, ads_speed * delta)
 	else:
 		transform.origin = transform.origin.lerp(equip_pos, ads_speed * delta)
+		rotation = rotation.lerp(og_rot, ads_speed * delta)
 		#player.camera.fov = lerp(player.camera.fov, 70, ads_speed * delta)
 		
 	return true
+
+func checkCanted():
+	is_canted = !is_canted

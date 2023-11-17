@@ -15,6 +15,7 @@ extends CharacterBody3D
 @onready var crosshair = $Control/Crosshair
 
 #Movement variables
+var input_dir
 var currentSpeed
 const walkingSpeed = 4.5
 const sprintSpeed = 7.0
@@ -23,6 +24,7 @@ const jumpForce = 4.5
 
 #Mouse sensitivity
 const mouse_sens = 0.2
+var mouse_input = Vector2.ZERO
 
 # Movement lerp var
 var lerp_speed = 5
@@ -65,8 +67,13 @@ var can_jump := true
 var camera_can_move := true
 var is_ads := false
 
+#Height
 @onready var standHeight = pcap.shape.height
 @onready var crouchHeight = standHeight - 1
+
+#Weapon Sway
+@export var wsway : float = 5
+@export var wrotate : float = 0.05
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -90,19 +97,15 @@ func _input(event):
 				rotate_y(deg_to_rad(-event.relative.x * mouse_sens))
 			head.rotate_x(deg_to_rad(-event.relative.y * mouse_sens))
 			head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
-			
-	if Input.is_action_just_pressed("flashlight"):
-		flashlight.visible = !flashlight.visible		
+			mouse_input = event.relative
 		
-	if Input.is_action_pressed("ads"):
-		is_ads = true
-	else:
-		is_ads = false
+	if Input.is_action_just_pressed("flashlight"):
+		flashlight.visible = !flashlight.visible
 
 func _physics_process(delta):
 	_movement(delta)
 	headDetection()
-	process_camera(delta)
+	process_weapon(delta)
 
 func headDetection():
 	# Head Detection
@@ -113,7 +116,7 @@ func headDetection():
 
 func _movement(delta):
 	#Getting movement inputs
-	var input_dir = Input.get_vector("left", "right", "forward", "back")
+	input_dir = Input.get_vector("left", "right", "forward", "back")
 
 	# Handle collision shape
 	if Input.is_action_pressed("crouch") or sliding:
@@ -171,15 +174,6 @@ func _movement(delta):
 		neck.rotation.y = lerp(neck.rotation.y, 0.0, delta * lerp_speed)
 		cam.rotation.z = lerp(cam.rotation.z, 0.0, delta * lerp_speed)
 
-	#Handle weapon weapon cam
-	if !is_ads:
-		gunCam.global_transform = cam.global_transform
-		weaponManager.global_position = head.global_position + Vector3(0.0, -0.15, 0.0)
-	else: 
-		gunCam.global_transform = cam.global_transform
-		weaponManager.global_position = head.global_position
-		
-	
 	#Handle sliding
 	if sliding:
 		slide_timer -= delta
@@ -288,16 +282,40 @@ func can_climb():
 			return false
 		return true
 
-func process_camera(delta):
-	if is_ads:
+func process_weapon(delta):
+	# Aim down sight
+	if Input.is_action_pressed("ads"):
 		weaponManager.current_weapon.aim_down_sights(true, delta)
+		is_ads = true
 		if weaponManager.current_weapon_slot != "Empty":
 			crosshair.visible = false
-	elif !is_ads:
+	else:
 		weaponManager.current_weapon.aim_down_sights(false, delta)
+		is_ads = false
 		crosshair.visible = true
 		
+	#Fire
 	if Input.is_action_pressed("fire"):
 		weaponManager.current_weapon.fire()
+		lerp_speed = 30
 	if Input.is_action_just_released("fire"):
 		weaponManager.current_weapon.fire_stop()
+		lerp_speed = 5
+	
+	#Canted the gun
+	if Input.is_action_just_pressed("canted"):
+		weaponManager.current_weapon.checkCanted()
+		
+	#Weapon Sway
+	mouse_input = lerp(mouse_input, Vector2.ZERO, lerp_speed * delta)
+	
+	if !is_ads:
+		gunCam.global_transform = cam.global_transform
+		weaponManager.global_position = lerp(weaponManager.global_position, head.global_position + Vector3(0.0, -0.15, 0.0), lerp_speed * delta)
+		weaponManager.rotation.z = lerp(weaponManager.rotation.z, -input_dir.x * wrotate, lerp_speed * delta)
+		weaponManager.rotation.x = lerp(weaponManager.rotation.x, mouse_input.y * wrotate, lerp_speed * delta)
+		weaponManager.rotation.y = lerp(weaponManager.rotation.y, mouse_input.x * wrotate, lerp_speed * delta)
+	else: 
+		gunCam.global_transform = cam.global_transform
+		weaponManager.rotation = Vector3.ZERO
+		weaponManager.global_position = lerp(weaponManager.global_position, head.global_position, lerp_speed * delta)

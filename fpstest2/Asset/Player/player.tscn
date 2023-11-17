@@ -9,8 +9,8 @@
 [ext_resource type="Theme" uid="uid://dgxfn705aogj5" path="res://Asset/UI/Theme/Debug.tres" id="4_o20lp"]
 [ext_resource type="Script" path="res://Asset/UI/DebugPanel.gd" id="5_67hak"]
 [ext_resource type="FontFile" uid="uid://bjoo6oxt8e567" path="res://Asset/UI/Reiswar.ttf" id="7_jsol8"]
-[ext_resource type="Texture2D" uid="uid://c3n8yyjcpohso" path="res://Asset/Weaponry/Images/untitled.png" id="9_7bfmx"]
 [ext_resource type="Script" path="res://Asset/Player/HUD.gd" id="9_s8fu2"]
+[ext_resource type="Texture2D" uid="uid://c3n8yyjcpohso" path="res://Asset/Weaponry/Images/glock.png" id="11_bdhka"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bmfui"]
 
@@ -135,8 +135,7 @@ ray_path = NodePath("../../../../../Neck/Head/shootingRay")
 transform = Transform3D(1, 0, 0, 0, 0.5, -0.866025, 0, 0.866025, 0.5, 0.42, -0.39, -0.73)
 
 [node name="Glock" parent="Control/SubViewportContainer/SubViewport/Gun Camera/weaponManager" instance=ExtResource("3_5ckcj")]
-transform = Transform3D(-0.16, 0, 2.41593e-08, 0, 0.16, 0, -2.41593e-08, 0, -0.16, 0.365, -0.315, -0.995)
-extra_ammo = 999
+transform = Transform3D(0.16, 0, 0, 0, 0.16, 0, 0, 0, 0.16, 0.13, -0.32, -0.75)
 
 [node name="Crosshair" type="CenterContainer" parent="Control" node_paths=PackedStringArray("retLines", "playerController")]
 layout_mode = 1
@@ -217,7 +216,7 @@ offset_top = -40.0
 offset_right = -32.0
 grow_horizontal = 0
 grow_vertical = 0
-texture = ExtResource("9_7bfmx")
+texture = ExtResource("11_bdhka")
 expand_mode = 2
 stretch_mode = 5
 
